@@ -9,32 +9,33 @@ ffmpeg.setFfmpegPath(pathToFfmpeg);
 
 const url = process.argv.slice(2)[0];
 if (url) {
-  if (!ytdl.validateURL(url)) {
-    console.log("Invalid Youtube URL!");
-  } else {
-    (async () => {
-      try {
-        const info = (await ytdl.getInfo(url)).videoDetails,
-          stream = ytdl(`${url}`, {
-            quality: "highestaudio",
-          });
-        let title = info.title.replace(/[\/\\:\"\*?<>|]/g, "");
+    if (!ytdl.validateURL(url)) {
+        console.log("Invalid Youtube URL!");
+    } else {
+        (async() => {
+                try {
+                    const info = (await ytdl.getInfo(url)).videoDetails,
+                        stream = ytdl(`${url}`, {
+                            quality: "highestaudio",
+                        });
+                    let title = info.title.replace(/[\/\\:\"\*?<>|]/g, "");
 
-        clearTitleEnd();
+                    clearTitleEnd();
 
-        function clearTitleEnd() {
-          if (title.endsWith(" ")) {
-            title = title.slice(0, -1);
-            clearTitleEnd();
-          } else {
-            try {
-              ffmpeg(stream)
-                .audioBitrate(128)
-                .save(`${process.cwd()}/${title}.mp3`)
-                .on("start", (p) => {
-                  console.log(
-                    chalk.green(
-                      `Started downloading ${chalk.blue(`"${title}"`)}.`
+                    function clearTitleEnd() {
+                        if (title.endsWith(" ")) {
+                            title = title.slice(0, -1);
+                            clearTitleEnd();
+                        } else {
+                            try {
+                                ffmpeg(stream)
+                                    .audioBitrate(128)
+                                    .save(`${process.cwd()}/${title}.wav`)
+                                    .duration(150)
+                                    .on("start", (p) => {
+                                            console.log(
+                                                    chalk.green(
+                                                        `Started downloading ${chalk.blue(`"${title}"`)}.`
                     )
                   );
                 })
